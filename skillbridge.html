@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillBridge — Where Skills Meet Purpose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #00d4aa;
+  --danger: #ff4d6d;
+  --warning: #ffb347;
+  --text: #f0f0f5;
+  --muted: #6b6b80;
+  --card-shadow: 0 0 0 1px rgba(108,99,255,0.15), 0 8px 32px rgba(0,0,0,0.4);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; line-height: 1.2; }
+a { color: var(--accent); text-decoration: none; }
+input, textarea, select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+select option { background: #1a1a25; }
+button { cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; outline: none; }
+img { max-width: 100%; }
+.hidden { display: none !important; }
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.page { display: none; min-height: 100vh; animation: pageIn 0.3s ease forwards; }
+.page.active { display: block; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 800;
+  color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.nav-logo i { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px; font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none; border: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.nav-link:hover, .nav-link.active { color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.nav-bell {
+  position: relative; cursor: pointer;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+  color: var(--muted);
+  background: none; border: none;
+  font-size: 16px;
+}
+.nav-bell:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.notif-badge {
+  position: absolute; top: 4px; right: 4px;
+  background: var(--danger);
+  color: white; font-size: 9px; font-weight: 700;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.nav-avatar:hover { border-color: var(--accent); }
+.avatar-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 180px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  z-index: 200;
+}
+.avatar-dropdown button {
+  display: block; width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+  background: none;
+  border: none;
+  transition: background 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.avatar-dropdown button:hover { background: rgba(255,255,255,0.05); }
+.avatar-dropdown hr { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+.hamburger {
+  display: none;
+  background: none; border: none;
+  color: var(--text); font-size: 20px;
+  cursor: pointer; padding: 4px;
+}
+.mobile-nav {
+  display: none;
+  position: fixed; top: 60px; left: 0; right: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+  z-index: 99;
+  flex-direction: column; gap: 4px;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav .nav-link { color: var(--text); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600;
+  transition: all 0.2s;
+  border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { box-shadow: 0 0 20px rgba(108,99,255,0.4); transform: translateY(-1px); }
+.btn-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { box-shadow: 0 0 20px rgba(255,77,109,0.4); transform: translateY(-1px); }
+.btn-success { background: var(--accent2); color: #001a15; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+}
+.card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(108,99,255,0.25), 0 16px 40px rgba(0,0,0,0.5); }
+
+/* ============================================================
+   TAGS / BADGES
+   ============================================================ */
+.tag {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  background: rgba(108,99,255,0.15);
+  color: var(--accent);
+  border: 1px solid rgba(108,99,255,0.25);
+}
+.urgency-low  { background: rgba(0,212,170,0.15); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+.urgency-med  { background: rgba(255,179,71,0.15); color: var(--warning); border-color: rgba(255,179,71,0.3); }
+.urgency-high { background: rgba(255,77,109,0.15); color: var(--danger);  border-color: rgba(255,77,109,0.3); }
+.status-open   { background: rgba(108,99,255,0.15); color: var(--accent); }
+.status-prog   { background: rgba(255,179,71,0.15); color: var(--warning); }
+.status-solved { background: rgba(0,212,170,0.15); color: var(--accent2); }
+
+.skill-chip {
+  display: inline-flex; align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.skill-chip.selected {
+  background: rgba(108,99,255,0.2);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 8px rgba(108,99,255,0.2);
+}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 9999;
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-size: 14px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  pointer-events: all;
+  animation: toastIn 0.3s ease forwards;
+  max-width: 320px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.toast.out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn  { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+@keyframes toastOut { from { opacity:1; transform: translateX(0); } to { opacity:0; transform: translateX(20px); } }
+.toast-success { background: rgba(0,212,170,0.15); color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+.toast-error   { background: rgba(255,77,109,0.15); color: var(--danger); border-color: rgba(255,77,109,0.3); }
+.toast-info    { background: rgba(108,99,255,0.15); color: var(--accent); border-color: rgba(108,99,255,0.3); }
+.toast-warning { background: rgba(255,179,71,0.15); color: var(--warning); border-color: rgba(255,179,71,0.3); }
+
+/* ============================================================
+   FORM HELPERS
+   ============================================================ */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 500; color: var(--muted); }
+.form-error { font-size: 12px; color: var(--danger); margin-top: 2px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+#page-landing { position: relative; overflow: hidden; }
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+.mesh-bg {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mesh-bg::before, .mesh-bg::after, .mesh-bg .mesh3 {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: meshDrift 8s ease-in-out infinite alternate;
+}
+.mesh-bg::before {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #6c63ff 0%, transparent 70%);
+  top: -100px; left: -100px;
+  animation-duration: 9s;
+}
+.mesh-bg::after {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #00d4aa 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  animation-duration: 11s; animation-delay: -3s;
+}
+.mesh-bg .mesh3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #ff4d6d 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  animation-duration: 7s; animation-delay: -5s;
+  opacity: 0.12;
+}
+@keyframes meshDrift {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(40px, 30px) scale(1.1); }
+}
+.hero-eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 2px;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 20px;
+  border: 1px solid rgba(108,99,255,0.3);
+  padding: 5px 14px; border-radius: 20px;
+  background: rgba(108,99,255,0.1);
+  display: inline-block;
+}
+.hero h1 {
+  font-size: clamp(42px, 8vw, 80px);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #f0f0f5 30%, #6c63ff 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 3vw, 20px);
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 36px;
+}
+.hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.stats-bar {
+  display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+  margin: 60px auto 0; max-width: 900px; padding: 0 24px;
+}
+.stat-card {
+  flex: 1; min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(108,99,255,0.1);
+}
+.stat-card .stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: var(--accent);
+  display: block;
+}
+.stat-card .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.how-it-works {
+  padding: 80px 24px;
+  text-align: center;
+  max-width: 900px; margin: 0 auto;
+}
+.how-it-works h2 { font-size: 36px; margin-bottom: 48px; }
+.hiw-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+}
+.hiw-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  position: relative;
+}
+.hiw-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: rgba(108,99,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin: 0 auto 16px;
+  border: 1px solid rgba(108,99,255,0.2);
+}
+.hiw-step {
+  position: absolute; top: -10px; left: -10px;
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  color: white;
+  font-family: 'Syne', sans-serif;
+}
+.hiw-card h3 { font-size: 18px; margin-bottom: 8px; }
+.hiw-card p { color: var(--muted); font-size: 14px; }
+.marquee-section { padding: 40px 0; overflow: hidden; }
+.marquee-track {
+  display: flex; gap: 12px;
+  animation: marquee 20s linear infinite;
+  white-space: nowrap;
+  width: max-content;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px; color: var(--muted);
+  white-space: nowrap;
+}
+.landing-footer {
+  border-top: 1px solid var(--border);
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ============================================================
+   AUTH PAGE
+   ============================================================ */
+#page-auth {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+#page-auth.active { display: flex; }
+.auth-box {
+  width: 100%; max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  box-shadow: var(--card-shadow);
+}
+.auth-tabs {
+  display: flex; gap: 4px;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.auth-tab {
+  flex: 1; padding: 8px;
+  border-radius: 8px;
+  font-size: 14px; font-weight: 600;
+  color: var(--muted);
+  background: none; border: none;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.auth-tab.active { background: var(--surface2); color: var(--text); }
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.role-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 4px 0; }
+.role-card {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.role-card.selected { border-color: var(--accent); background: rgba(108,99,255,0.1); }
+.role-card .role-icon { font-size: 24px; margin-bottom: 6px; display: block; }
+.role-card span { font-size: 12px; font-weight: 600; color: var(--muted); display: block; }
+.role-card.selected span { color: var(--accent); }
+
+/* ============================================================
+   ONBOARDING PAGE
+   ============================================================ */
+#page-onboarding {
+  display: none;
+  min-height: 100vh;
+  padding: 60px 24px;
+  align-items: flex-start;
+  justify-content: center;
+}
+#page-onboarding.active { display: flex; }
+.onboard-box {
+  width: 100%; max-width: 560px;
+}
+.progress-bar {
+  display: flex; gap: 8px; margin-bottom: 36px;
+  align-items: center;
+}
+.progress-step {
+  flex: 1; height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-step .fill {
+  position: absolute; inset: 0;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.progress-step.active .fill { transform: scaleX(1); }
+.progress-step.done .fill { transform: scaleX(1); background: var(--accent2); }
+.progress-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.onboard-step { display: none; }
+.onboard-step.active { display: block; animation: pageIn 0.3s ease; }
+.color-picker { display: flex; gap: 10px; }
+.color-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+.color-dot.selected { border-color: white; transform: scale(1.15); }
+.skills-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin: 8px 0;
+}
+.ai-suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.suggestion-col h4 { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.suggestion-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.page-content { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+.page-header { margin-bottom: 28px; }
+.page-header h1 { font-size: 28px; margin-bottom: 4px; }
+.page-header p { color: var(--muted); font-size: 14px; }
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.stat-mini {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.stat-mini .sm-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.stat-mini .sm-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 20px; }
+.full-col { margin-bottom: 20px; }
+.ai-insight-card {
+  background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(0,212,170,0.04));
+  border: 1px solid rgba(108,99,255,0.2);
+}
+.insight-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+.insight-item:first-child { border-top: none; padding-top: 0; }
+.powered-by { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: right; }
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ============================================================
+   REQUEST CARDS
+   ============================================================ */
+.request-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.request-card:hover { border-color: rgba(108,99,255,0.3); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+.request-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 10px; }
+.request-card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.request-card-badges { display: flex; gap: 6px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+.request-card-desc { color: var(--muted); font-size: 13px; line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.request-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.request-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.request-card-author { display: flex; align-items: center; gap: 8px; }
+.avatar-sm {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  font-family: 'Syne', sans-serif;
+}
+.card-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ============================================================
+   EXPLORE PAGE
+   ============================================================ */
+.explore-search {
+  position: relative; margin-bottom: 16px;
+}
+.explore-search i {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); pointer-events: none;
+}
+.explore-search input { padding-left: 40px; }
+.filter-bar {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 24px;
+}
+.filter-bar select { width: auto; min-width: 120px; }
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 16px;
+}
+.empty-state {
+  text-align: center; padding: 60px 24px;
+  grid-column: 1/-1;
+}
+.empty-icon {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(108,99,255,0.1);
+  border: 1px solid rgba(108,99,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 16px;
+}
+
+/* ============================================================
+   CREATE PAGE
+   ============================================================ */
+.create-form { max-width: 700px; display: flex; flex-direction: column; gap: 18px; }
+.urgency-options { display: flex; gap: 10px; }
+.urgency-opt {
+  flex: 1; padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  font-size: 13px; font-weight: 600;
+}
+.urgency-opt.selected-low  { border-color: var(--accent2); color: var(--accent2); background: rgba(0,212,170,0.08); }
+.urgency-opt.selected-med  { border-color: var(--warning); color: var(--warning); background: rgba(255,179,71,0.08); }
+.urgency-opt.selected-high { border-color: var(--danger);  color: var(--danger);  background: rgba(255,77,109,0.08); }
+.tags-input-wrap { position: relative; }
+.tags-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tags-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  background: rgba(108,99,255,0.15);
+  border: 1px solid rgba(108,99,255,0.3);
+  border-radius: 20px;
+  font-size: 12px; color: var(--accent);
+}
+.tags-chip button { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; line-height: 1; }
+.ai-tools-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.diff-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-size: 13px; line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  margin-top: 8px;
+}
+.diff-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* ============================================================
+   REQUEST DETAIL
+   ============================================================ */
+.detail-hero { margin-bottom: 24px; }
+.detail-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+.detail-body { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+.helpers-list { display: flex; flex-direction: column; gap: 10px; }
+.helper-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.comment {
+  display: flex; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comment-content { flex: 1; }
+.comment-author { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.comment-text { font-size: 14px; color: var(--muted); }
+.comment-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+.lb-banner {
+  text-align: center; padding: 48px 24px 36px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.podium {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 16px; margin: 40px 0;
+}
+.podium-slot {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.podium-platform {
+  border-radius: 8px 8px 0 0;
+  width: 90px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 24px; font-weight: 800;
+  color: rgba(0,0,0,0.4);
+}
+.podium-1 .podium-platform { height: 100px; background: linear-gradient(to bottom, #ffd700, #c8a200); }
+.podium-2 .podium-platform { height: 72px;  background: linear-gradient(to bottom, #c0c0c0, #8a8a8a); }
+.podium-3 .podium-platform { height: 54px;  background: linear-gradient(to bottom, #cd7f32, #8b5a00); }
+.podium-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 700;
+  border: 3px solid rgba(255,255,255,0.2);
+  font-family: 'Syne', sans-serif;
+}
+.podium-name { font-size: 13px; font-weight: 600; text-align: center; }
+.podium-score { font-size: 12px; color: var(--muted); }
+.lb-list { display: flex; flex-direction: column; gap: 8px; }
+.lb-row {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.lb-rank { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--muted); width: 32px; text-align: center; }
+.lb-info { flex: 1; }
+.lb-name { font-weight: 600; margin-bottom: 2px; }
+.lb-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.lb-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(108,99,255,0.15); color: var(--accent); border: 1px solid rgba(108,99,255,0.2); }
+.trust-bar { width: 100px; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.trust-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; }
+
+/* ============================================================
+   AI CENTER PAGE
+   ============================================================ */
+.ai-section { margin-bottom: 32px; }
+.ai-section h2 { font-size: 22px; margin-bottom: 16px; }
+.trend-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+.trend-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.trend-name { font-weight: 600; margin-bottom: 4px; }
+.trend-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.hotness-bar { height: 3px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+.hotness-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff4d6d); border-radius: 2px; }
+.learning-path { display: flex; flex-direction: column; gap: 0; margin-top: 12px; }
+.lp-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding-bottom: 20px;
+  position: relative;
+}
+.lp-step:last-child { padding-bottom: 0; }
+.lp-step::before {
+  content: '';
+  position: absolute;
+  left: 15px; top: 32px; bottom: 0;
+  width: 1px; background: var(--border);
+}
+.lp-step:last-child::before { display: none; }
+.lp-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(108,99,255,0.2);
+  border: 2px solid var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--accent);
+  flex-shrink: 0; font-family: 'Syne', sans-serif;
+}
+.lp-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.lp-content p { font-size: 13px; color: var(--muted); }
+.smart-match-grid { display: flex; flex-direction: column; gap: 10px; }
+.pulse-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.pulse-card {
+  background: var(--surface);
+  border: 1px solid rgba(108,99,255,0.15);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.pulse-stat { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--accent); }
+.pulse-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ============================================================
+   NOTIFICATIONS PAGE
+   ============================================================ */
+.notif-list { display: flex; flex-direction: column; gap: 8px; }
+.notif-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: all 0.2s;
+}
+.notif-item.unread { border-color: rgba(108,99,255,0.25); background: rgba(108,99,255,0.04); }
+.notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.notif-content { flex: 1; }
+.notif-text { font-size: 14px; margin-bottom: 2px; }
+.notif-time { font-size: 12px; color: var(--muted); }
+.notif-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+
+/* ============================================================
+   PROFILE PAGE
+   ============================================================ */
+.profile-header {
+  display: flex; align-items: center; gap: 20px;
+  margin-bottom: 28px;
+}
+.profile-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  border: 3px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.profile-info h2 { font-size: 22px; margin-bottom: 2px; }
+.profile-info p { color: var(--muted); font-size: 14px; }
+.activity-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--muted);
+}
+.activity-item i { width: 20px; text-align: center; }
+
+/* ============================================================
+   ADMIN PAGE
+   ============================================================ */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th, .data-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table th { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+.confetti-piece {
+  position: fixed;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  top: -10px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: block; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .requests-grid { grid-template-columns: 1fr; }
+  .hiw-grid { grid-template-columns: 1fr; }
+  .ai-suggestions { grid-template-columns: 1fr; }
+  .detail-body { grid-template-columns: 1fr; }
+  .pulse-cards { grid-template-columns: 1fr; }
+  .podium { gap: 8px; }
+  .podium-platform { width: 70px; }
+  .filter-bar { gap: 8px; }
+  .filter-bar select { min-width: 100px; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 36px; }
+  .auth-box { padding: 24px; }
+  .role-cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Animated Background Mesh -->
+<div class="mesh-bg"><div class="mesh3"></div></div>
+
+<!-- NAVBAR (hidden until logged in) -->
+<nav id="navbar" class="hidden">
+  <div class="nav-logo" onclick="navigate('dashboard')">
+    <i class="fas fa-bolt"></i> SkillBridge
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="navigate('dashboard')" data-page="dashboard">Dashboard</button>
+    <button class="nav-link" onclick="navigate('explore')" data-page="explore">Explore</button>
+    <button class="nav-link" onclick="navigate('create')" data-page="create">Create</button>
+    <button class="nav-link" onclick="navigate('leaderboard')" data-page="leaderboard">Leaderboard</button>
+    <button class="nav-link" onclick="navigate('ai-center')" data-page="ai-center">AI Center</button>
+  </div>
+  <button class="hamburger" onclick="toggleMobileNav()"><i class="fas fa-bars"></i></button>
+  <div class="nav-right">
+    <button class="nav-bell" onclick="navigate('notifications')" id="nav-bell-btn">
+      <i class="fas fa-bell"></i>
+      <span class="notif-badge hidden" id="notif-badge">0</span>
+    </button>
+    <div style="position:relative;">
+      <div class="nav-avatar" id="nav-avatar" onclick="toggleAvatarDropdown()"></div>
+      <div class="avatar-dropdown hidden" id="avatar-dropdown">
+        <button onclick="navigate('profile'); closeAvatarDropdown()"><i class="fas fa-user" style="width:16px;margin-right:6px;"></i>Profile</button>
+        <button onclick="navigate('admin'); closeAvatarDropdown()"><i class="fas fa-cog" style="width:16px;margin-right:6px;"></i>Settings</button>
+        <hr>
+        <button onclick="logout()" style="color:var(--danger);"><i class="fas fa-sign-out-alt" style="width:16px;margin-right:6px;"></i>Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="nav-link" onclick="navigate('dashboard');closeMobileNav()">Dashboard</button>
+  <button class="nav-link" onclick="navigate('explore');closeMobileNav()">Explore</button>
+  <button class="nav-link" onclick="navigate('create');closeMobileNav()">Create</button>
+  <button class="nav-link" onclick="navigate('leaderboard');closeMobileNav()">Leaderboard</button>
+  <button class="nav-link" onclick="navigate('ai-center');closeMobileNav()">AI Center</button>
+  <button class="nav-link" onclick="navigate('notifications');closeMobileNav()">Notifications</button>
+  <button class="nav-link" onclick="navigate('profile');closeMobileNav()">Profile</button>
+  <button class="nav-link" onclick="logout()" style="color:var(--danger);">Logout</button>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ============================================================
+     PAGE: LANDING
+     ============================================================ -->
+<div id="page-landing" class="page">
+  <div class="hero">
+    <div class="hero-eyebrow">🚀 Community-Powered Learning</div>
+    <h1>Where Skills<br>Meet Purpose</h1>
+    <p class="hero-sub">Post a problem. Find your people. Solve together.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary btn-lg" onclick="navigate('auth')">Get Started Free</button>
+      <button class="btn btn-secondary btn-lg" onclick="navigate('explore')">Explore Requests</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-card"><span class="stat-num">2,847</span><span class="stat-label">Problems Solved</span></div>
+    <div class="stat-card"><span class="stat-num">1,203</span><span class="stat-label">Helpers Active</span></div>
+    <div class="stat-card"><span class="stat-num">94%</span><span class="stat-label">Success Rate</span></div>
+    <div class="stat-card"><span class="stat-num">48</span><span class="stat-label">Skills Covered</span></div>
+  </div>
+
+  <div class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-step">1</div>
+        <div class="hiw-icon">📝</div>
+        <h3>Post a Request</h3>
+        <p>Describe your problem, set urgency, and let our AI help you craft the perfect post.</p>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-step">2</div>
+        <div class="hiw-icon">🎯</div>
+        <h3>Get Matched</h3>
+        <p>Our system connects you with skilled community members who can help.</p>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-step">3</div>
+        <div class="hiw-icon">✅</div>
+        <h3>Solve Together</h3>
+        <p>Collaborate, comment, and mark the request solved when done. Build trust.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee-section">
+    <div class="marquee-track" id="marquee-track"></div>
+  </div>
+
+  <footer class="landing-footer">
+    <p>© 2025 SkillBridge · Built for the community, by the community</p>
+  </footer>
+</div>
+
+<!-- ============================================================
+     PAGE: AUTH
+     ============================================================ -->
+<div id="page-auth" class="page">
+  <div class="auth-box">
+    <div class="nav-logo" style="justify-content:center;margin-bottom:24px;" onclick="navigate('landing')">
+      <i class="fas fa-bolt"></i> SkillBridge
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="showAuthTab('login')">Login</button>
+      <button class="auth-tab" id="tab-signup" onclick="showAuthTab('signup')">Sign Up</button>
+    </div>
+    <!-- Login Form -->
+    <div id="auth-login" class="auth-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+        <div class="form-error hidden" id="login-email-err"></div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+        <div class="form-error hidden" id="login-pass-err"></div>
+      </div>
+      <div class="form-error hidden" id="login-err" style="background:rgba(255,77,109,0.1);padding:8px 12px;border-radius:6px;"></div>
+      <button class="btn btn-primary" onclick="doLogin()" style="width:100%;margin-top:4px;">Sign In</button>
+      <p style="text-align:center;font-size:13px;color:var(--muted);">Don't have an account? <a onclick="showAuthTab('signup')" style="cursor:pointer;">Sign up</a></p>
+      <hr class="divider">
+      <button class="btn btn-secondary" onclick="demoLogin()" style="width:100%;"><i class="fas fa-play-circle"></i> Demo Login</button>
+    </div>
+    <!-- Signup Form -->
+    <div id="auth-signup" class="auth-form hidden">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your name">
+        <div class="form-error hidden" id="signup-name-err"></div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com">
+        <div class="form-error hidden" id="signup-email-err"></div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-pass" placeholder="Min 6 characters">
+        <div class="form-error hidden" id="signup-pass-err"></div>
+      </div>
+      <div class="form-group">
+        <label>I want to…</label>
+        <div class="role-cards">
+          <div class="role-card" data-role="need" onclick="selectRole(this)">
+            <span class="role-icon">🙋</span><span>Need Help</span>
+          </div>
+          <div class="role-card" data-role="help" onclick="selectRole(this)">
+            <span class="role-icon">🤝</span><span>Can Help</span>
+          </div>
+          <div class="role-card selected" data-role="both" onclick="selectRole(this)">
+            <span class="role-icon">⚡</span><span>Both</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-error hidden" id="signup-err" style="background:rgba(255,77,109,0.1);padding:8px 12px;border-radius:6px;"></div>
+      <button class="btn btn-primary" onclick="doSignup()" style="width:100%;margin-top:4px;">Create Account</button>
+      <p style="text-align:center;font-size:13px;color:var(--muted);">Already have an account? <a onclick="showAuthTab('login')" style="cursor:pointer;">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: ONBOARDING
+     ============================================================ -->
+<div id="page-onboarding" class="page">
+  <div class="onboard-box">
+    <div class="nav-logo" style="margin-bottom:32px;"><i class="fas fa-bolt"></i> SkillBridge</div>
+    <div class="progress-bar">
+      <div class="progress-step active" id="ps1"><div class="fill"></div></div>
+      <div class="progress-step" id="ps2"><div class="fill"></div></div>
+      <div class="progress-step" id="ps3"><div class="fill"></div></div>
+      <span class="progress-label" id="progress-label">Step 1 of 3</span>
+    </div>
+
+    <!-- Step 1: Profile -->
+    <div class="onboard-step active" id="ob-step1">
+      <h2 style="margin-bottom:6px;">Set up your profile</h2>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">Help the community know who you are.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group">
+          <label>Display Name</label>
+          <input type="text" id="ob-name" placeholder="How should we call you?">
+        </div>
+        <div class="form-group">
+          <label>Bio</label>
+          <textarea id="ob-bio" placeholder="Tell the community about yourself…" rows="3" style="resize:vertical;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="ob-location" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label>Avatar Color</label>
+          <div class="color-picker" id="color-picker"></div>
+        </div>
+        <button class="btn btn-primary" onclick="obNext(1)" style="align-self:flex-start;">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 2: Skills -->
+    <div class="onboard-step" id="ob-step2">
+      <h2 style="margin-bottom:6px;">Your skills</h2>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">Click to select skills you have or want to work with.</p>
+      <div class="skills-grid" id="skills-grid"></div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-secondary" onclick="obBack(2)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary" onclick="obNext(2)">Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 3: AI Suggestions -->
+    <div class="onboard-step" id="ob-step3">
+      <h2 style="margin-bottom:6px;">AI-Powered Insights</h2>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:24px;">Based on your skills, here's what we suggest.</p>
+      <div id="ai-loading" style="text-align:center;padding:32px;">
+        <div class="spinner" style="width:32px;height:32px;margin:0 auto 12px;"></div>
+        <p style="color:var(--muted);">Analyzing your skills…</p>
+      </div>
+      <div id="ai-results" class="hidden">
+        <div class="ai-suggestions">
+          <div class="suggestion-col">
+            <h4>✅ You Can Help With</h4>
+            <div id="can-help-list"></div>
+          </div>
+          <div class="suggestion-col">
+            <h4>🔍 You Might Need Help With</h4>
+            <div id="need-help-list"></div>
+          </div>
+        </div>
+        <p class="powered-by">✨ Powered by Claude AI</p>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn btn-secondary" onclick="obBack(3)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary" onclick="finishOnboarding()">Looks good! <i class="fas fa-check"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: DASHBOARD
+     ============================================================ -->
+<div id="page-dashboard" class="page">
+  <div class="page-content">
+    <div class="page-header">
+      <h1 id="dash-greeting">Welcome back! 👋</h1>
+      <p>Here's what's happening in your community today.</p>
+    </div>
+
+    <div class="stats-row" id="dash-stats-row">
+      <div class="stat-mini"><div class="sm-label"><i class="fas fa-paper-plane"></i> Requests Posted</div><div class="sm-val" id="dash-posted">0</div></div>
+      <div class="stat-mini"><div class="sm-label"><i class="fas fa-hands-helping"></i> Requests Helped</div><div class="sm-val" id="dash-helped">0</div></div>
+      <div class="stat-mini"><div class="sm-label"><i class="fas fa-star"></i> Trust Score</div><div class="sm-val" id="dash-trust">0</div></div>
+      <div class="stat-mini"><div class="sm-label"><i class="fas fa-trophy"></i> Rank</div><div class="sm-val" id="dash-rank">#—</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card ai-insight-card" id="ai-insights-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <h3 style="font-size:16px;">✨ AI Insights</h3>
+          <button class="btn btn-sm btn-secondary" onclick="loadDashInsights()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+        <div id="insights-content"><div style="text-align:center;padding:16px;"><div class="spinner" style="margin:0 auto;"></div></div></div>
+        <p class="powered-by">Powered by Claude AI</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:14px;">⚡ Quick Actions</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-primary" onclick="navigate('create')"><i class="fas fa-plus"></i> Post a Request</button>
+          <button class="btn btn-secondary" onclick="navigate('explore')"><i class="fas fa-search"></i> Browse Requests</button>
+          <button class="btn btn-secondary" onclick="navigate('leaderboard')"><i class="fas fa-trophy"></i> View Leaderboard</button>
+          <button class="btn btn-secondary" onclick="navigate('ai-center')"><i class="fas fa-robot"></i> Open AI Center</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="full-col">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h3 style="font-size:16px;">Recent Requests</h3>
+          <button class="btn btn-sm btn-secondary" onclick="navigate('explore')">View All</button>
+        </div>
+        <div id="dash-recent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: EXPLORE
+     ============================================================ -->
+<div id="page-explore" class="page">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Explore Requests</h1>
+      <p>Find where you can help or discover people to assist you.</p>
+    </div>
+    <div class="explore-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="explore-search" placeholder="Search by title, description, tags…" oninput="filterRequests()">
+    </div>
+    <div class="filter-bar">
+      <select id="filter-category" onchange="filterRequests()">
+        <option value="">All Categories</option>
+        <option>Coding</option><option>Design</option><option>Data</option>
+        <option>DevOps</option><option>Writing</option><option>Other</option>
+      </select>
+      <select id="filter-urgency" onchange="filterRequests()">
+        <option value="">All Urgency</option>
+        <option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option>
+      </select>
+      <select id="filter-status" onchange="filterRequests()">
+        <option value="">All Status</option>
+        <option value="Open">Open</option><option value="In Progress">In Progress</option><option value="Solved">Solved</option>
+      </select>
+      <button class="btn btn-sm btn-secondary" onclick="clearFilters()"><i class="fas fa-times"></i> Clear</button>
+    </div>
+    <div class="requests-grid" id="requests-grid"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: CREATE
+     ============================================================ -->
+<div id="page-create" class="page">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>Post a Request</h1>
+      <p>Let the community know what you need help with.</p>
+    </div>
+    <div class="create-form">
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="create-title" placeholder="What do you need help with?">
+        <div class="form-error hidden" id="create-title-err"></div>
+      </div>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea id="create-desc" rows="5" placeholder="Describe your problem in detail…" style="resize:vertical;"></textarea>
+        <div class="form-error hidden" id="create-desc-err"></div>
+      </div>
+      <div id="diff-container" class="hidden">
+        <label style="font-size:13px;color:var(--muted);font-weight:500;">AI Improved Version:</label>
+        <div class="diff-preview" id="diff-preview"></div>
+        <div class="diff-actions">
+          <button class="btn btn-sm btn-success" onclick="acceptImprovement()"><i class="fas fa-check"></i> Accept</button>
+          <button class="btn btn-sm btn-secondary" onclick="rejectImprovement()"><i class="fas fa-times"></i> Keep Original</button>
+        </div>
+      </div>
+      <div class="ai-tools-row">
+        <button class="btn btn-sm btn-secondary" onclick="aiAutoCategory()"><i class="fas fa-tag"></i> Auto-Categorize</button>
+        <button class="btn btn-sm btn-secondary" onclick="aiSuggestTags()"><i class="fas fa-lightbulb"></i> Suggest Tags</button>
+        <button class="btn btn-sm btn-secondary" onclick="aiRewriteDesc()"><i class="fas fa-magic"></i> Improve</button>
+      </div>
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="create-category">
+          <option value="">Select category…</option>
+          <option>Coding</option><option>Design</option><option>Data</option>
+          <option>DevOps</option><option>Writing</option><option>Other</option>
+        </select>
+        <div class="form-error hidden" id="create-cat-err"></div>
+      </div>
+      <div class="form-group">
+        <label>Urgency *</label>
+        <div class="urgency-options">
+          <div class="urgency-opt selected-low" data-urg="Low" onclick="selectUrgency(this)">🟢 Low</div>
+          <div class="urgency-opt" data-urg="Medium" onclick="selectUrgency(this)">🟡 Medium</div>
+          <div class="urgency-opt" data-urg="High" onclick="selectUrgency(this)">🔴 High</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tags (press Enter to add)</label>
+        <input type="text" id="create-tag-input" placeholder="e.g. python, api, debugging" onkeydown="handleTagInput(event)">
+        <div class="tags-chips" id="create-tags-chips"></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" onclick="submitRequest()"><i class="fas fa-paper-plane"></i> Post Request</button>
+        <button class="btn btn-secondary" onclick="navigate('explore')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: REQUEST DETAIL
+     ============================================================ -->
+<div id="page-request-detail" class="page">
+  <div class="page-content">
+    <button class="btn btn-secondary btn-sm" onclick="navigate('explore')" style="margin-bottom:20px;"><i class="fas fa-arrow-left"></i> Back</button>
+    <div class="detail-hero">
+      <div class="detail-meta" id="detail-badges"></div>
+      <h1 id="detail-title" style="font-size:28px;margin-bottom:12px;"></h1>
+      <div class="card" style="background:rgba(108,99,255,0.05);border-color:rgba(108,99,255,0.2);margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><i class="fas fa-robot" style="color:var(--accent);"></i><span style="font-size:13px;font-weight:600;color:var(--accent);">AI Summary</span></div>
+        <p id="detail-summary" style="font-size:14px;color:var(--muted);"></p>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px;margin-bottom:12px;">Full Description</h3>
+          <p id="detail-desc" style="font-size:14px;line-height:1.7;color:var(--muted);white-space:pre-wrap;"></p>
+          <div class="detail-meta" id="detail-tags" style="margin-top:12px;"></div>
+        </div>
+        <div class="card" id="detail-actions-card" style="margin-bottom:16px;"></div>
+        <div class="card">
+          <h3 style="font-size:15px;margin-bottom:14px;">💬 Comments</h3>
+          <div id="detail-comments"></div>
+          <div style="display:flex;gap:10px;margin-top:12px;" id="comment-form">
+            <input type="text" id="comment-input" placeholder="Add a comment…" style="flex:1;">
+            <button class="btn btn-primary btn-sm" onclick="postComment()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:14px;margin-bottom:12px;">📋 Details</h3>
+          <div id="detail-meta-box" style="display:flex;flex-direction:column;gap:8px;font-size:13px;"></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:14px;margin-bottom:12px;">👥 Helpers (<span id="helpers-count">0</span>)</h3>
+          <div class="helpers-list" id="helpers-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: LEADERBOARD
+     ============================================================ -->
+<div id="page-leaderboard" class="page">
+  <div class="lb-banner">
+    <h1 style="font-size:36px;margin-bottom:8px;">🏆 Community Champions</h1>
+    <p style="color:var(--muted);">Recognizing those who make the community better every day.</p>
+  </div>
+  <div class="page-content" style="padding-top:0;">
+    <div class="podium" id="lb-podium"></div>
+    <div class="lb-list" id="lb-list"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: AI CENTER
+     ============================================================ -->
+<div id="page-ai-center" class="page">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>🤖 AI Center</h1>
+      <p>Powered by Claude — your intelligent community assistant.</p>
+    </div>
+
+    <div class="ai-section">
+      <h2>🔥 Trending Topics</h2>
+      <div id="ai-trends-container">
+        <div style="text-align:center;padding:24px;"><div class="spinner" style="margin:0 auto;"></div><p style="color:var(--muted);margin-top:8px;">Loading trends…</p></div>
+      </div>
+    </div>
+
+    <div class="ai-section">
+      <h2>📚 Skill Gap Analyzer</h2>
+      <div class="card" style="max-width:500px;">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="text" id="skill-gap-input" placeholder="Enter a skill you want to learn (e.g. Kubernetes)" style="flex:1;">
+          <button class="btn btn-primary" onclick="analyzeSkillGap()">Analyze</button>
+        </div>
+        <div id="skill-gap-result" class="hidden" style="margin-top:16px;">
+          <h4 style="margin-bottom:14px;font-size:14px;">Learning Path</h4>
+          <div class="learning-path" id="learning-path"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-section">
+      <h2>🎯 Smart Match</h2>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:16px;">Open requests that match your skills</p>
+      <div id="smart-match-list" class="smart-match-grid"></div>
+    </div>
+
+    <div class="ai-section">
+      <h2>📊 Community Pulse</h2>
+      <div class="pulse-cards" id="pulse-cards">
+        <div style="text-align:center;padding:24px;grid-column:1/-1;"><div class="spinner" style="margin:0 auto;"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: NOTIFICATIONS
+     ============================================================ -->
+<div id="page-notifications" class="page">
+  <div class="page-content">
+    <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <h1>Notifications</h1>
+        <p>Stay up to date with community activity.</p>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="markAllRead()">Mark All Read</button>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: PROFILE
+     ============================================================ -->
+<div id="page-profile" class="page">
+  <div class="page-content">
+    <div class="page-header"><h1>My Profile</h1><p>Manage your public presence and skills.</p></div>
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-info">
+        <h2 id="profile-name"></h2>
+        <p id="profile-location" style="display:flex;align-items:center;gap:4px;"><i class="fas fa-map-marker-alt" style="font-size:12px;"></i> <span></span></p>
+        <p id="profile-bio" style="margin-top:4px;font-size:14px;"></p>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:20px;">
+      <div class="card">
+        <h3 style="font-size:15px;margin-bottom:14px;">Edit Profile</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="form-group"><label>Display Name</label><input type="text" id="edit-name"></div>
+          <div class="form-group"><label>Bio</label><textarea id="edit-bio" rows="3" style="resize:vertical;"></textarea></div>
+          <div class="form-group"><label>Location</label><input type="text" id="edit-location"></div>
+          <div class="form-group">
+            <label>Skills</label>
+            <div class="skills-grid" id="profile-skills-grid" style="margin-top:6px;"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="saveProfile()" style="align-self:flex-start;">Save Changes</button>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px;margin-bottom:12px;">📊 Stats</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;">
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Requests Posted</span><span id="pstat-posted" style="font-weight:600;"></span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Requests Helped</span><span id="pstat-helped" style="font-weight:600;"></span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Trust Score <span title="Based on: requests helped (×2) + requests posted (×1) + comments (×0.5)" style="cursor:help;color:var(--accent);">ⓘ</span></span><span id="pstat-trust" style="font-weight:600;color:var(--accent);"></span></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px;margin-bottom:12px;">🏅 Badges</h3>
+          <div id="profile-badges" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:15px;margin-bottom:12px;">📅 Recent Activity</h3>
+          <div id="profile-activity"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: ADMIN
+     ============================================================ -->
+<div id="page-admin" class="page">
+  <div class="page-content">
+    <div class="page-header">
+      <h1>⚙️ Admin Panel</h1>
+      <p>Manage users, requests, and platform activity.</p>
+    </div>
+    <div class="stats-row" id="admin-stats"></div>
+    <div class="card" style="margin-bottom:20px;overflow-x:auto;">
+      <h3 style="font-size:15px;margin-bottom:14px;">All Requests</h3>
+      <table class="data-table" id="admin-req-table"><thead><tr><th>Title</th><th>Author</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-req-body"></tbody></table>
+    </div>
+    <div class="card" style="overflow-x:auto;">
+      <h3 style="font-size:15px;margin-bottom:14px;">All Users</h3>
+      <table class="data-table" id="admin-user-table"><thead><tr><th>Name</th><th>Email</th><th>Skills</th><th>Trust</th></tr></thead><tbody id="admin-user-body"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   APP STATE & PERSISTENCE
+   ============================================================ */
+const STORAGE_KEY = 'skillbridge_data';
+let App = { currentUser: null, users: [], requests: [], notifications: [], currentPage: 'landing' };
+let currentRequestId = null;
+let createTags = [];
+let aiImprovedDesc = null;
+let selectedRole = 'both';
+let obSelectedSkills = [];
+let obAvatarColor = '#6c63ff';
+
+const ALL_SKILLS = ['Python','JavaScript','React','Node.js','CSS','Figma','SQL','Machine Learning','DevOps','Flutter','Cybersecurity','Data Science','UI/UX','WordPress','Photoshop','Excel','Writing','Video Editing','SEO','Blockchain'];
+const AVATAR_COLORS = ['#6c63ff','#00d4aa','#ff4d6d','#ffb347','#a78bfa','#06b6d4'];
+const MARQUEE_SKILLS = ['Python','UI/UX','React','Data Science','DevOps','Figma','SQL','Machine Learning','Node.js','Flutter','Cybersecurity','Blockchain'];
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(App)); } catch(e) {}
+}
+function loadData() {
+  try {
+    const d = localStorage.getItem(STORAGE_KEY);
+    if (d) { const parsed = JSON.parse(d); Object.assign(App, parsed); }
+  } catch(e) {}
+}
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function timeAgo(ts) {
+  const s = (Date.now()-ts)/1000;
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+function hashPass(p) { return btoa(p); }
+function getUser(id) { return App.users.find(u=>u.id===id); }
+function getUserInitials(u) {
+  if(!u||!u.name) return '?';
+  return u.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+function calcTrust(uid) {
+  const posted = App.requests.filter(r=>r.authorId===uid).length;
+  const helped = App.requests.reduce((a,r)=>(r.helpers||[]).includes(uid)?a+1:a,0);
+  const comments = App.requests.reduce((a,r)=>(r.comments||[]).filter(c=>c.authorId===uid).length+a,0);
+  return posted*1 + helped*2 + comments*0.5;
+}
+function getBadges(uid) {
+  const helped = App.requests.reduce((a,r)=>(r.helpers||[]).includes(uid)?a+1:a,0);
+  const badges=[];
+  if(helped>=1) badges.push('Helper');
+  if(helped>=5) badges.push('Expert');
+  if(helped>=10) badges.push('Champion');
+  if(helped>=20) badges.push('Mentor');
+  return badges;
+}
+
+/* ============================================================
+   SEED DEMO DATA
+   ============================================================ */
+function seedDemoData() {
+  if(App.users.length>0) return;
+  const alex = { id:'u1', name:'Alex Chen', email:'alex@demo.com', pass: hashPass('demo123'), role:'both', bio:'Full-stack dev passionate about open source.', location:'San Francisco, CA', skills:['Python','React','Node.js','JavaScript'], color:'#6c63ff', createdAt: Date.now()-864e5*10 };
+  const sara = { id:'u2', name:'Sara Liu', email:'sara@demo.com', pass: hashPass('demo123'), role:'help', bio:'Designer & UX researcher.', location:'New York, NY', skills:['UI/UX','Figma','CSS','Photoshop'], color:'#00d4aa', createdAt: Date.now()-864e5*7 };
+  const dev = { id:'u3', name:'Dev Admin', email:'dev@demo.com', pass: hashPass('admin'), role:'both', bio:'Platform admin & full-stack engineer.', location:'Austin, TX', skills:['DevOps','Python','SQL','Machine Learning'], color:'#ff4d6d', createdAt: Date.now()-864e5*14, isAdmin:true };
+  App.users = [alex, sara, dev];
+
+  const now = Date.now();
+  App.requests = [
+    { id:'r1', title:'Help with React Context API state not updating', description:'I have a complex React app using Context API and the state updates are inconsistent. The component tree is several levels deep and I can\'t figure out why certain components don\'t re-render when the context changes.', category:'Coding', urgency:'High', tags:['React','JavaScript','state-management'], authorId:'u2', helpers:['u1'], status:'In Progress', comments:[{id:'c1',authorId:'u1',text:'Have you tried using useReducer with Context? It often solves these issues.',createdAt:now-3600*1e3}], createdAt:now-864e5*2 },
+    { id:'r2', title:'Need UI/UX review for my SaaS dashboard', description:'I\'ve built a data analytics dashboard and need feedback on usability, visual hierarchy, and information architecture. Looking for someone with product design experience.', category:'Design', urgency:'Medium', tags:['UI/UX','Figma','dashboard'], authorId:'u1', helpers:[], status:'Open', comments:[], createdAt:now-864e5 },
+    { id:'r3', title:'SQL query optimization — slow JOIN on 1M+ rows', description:'My PostgreSQL query is running for 30+ seconds on a table with 1M+ rows. Using multiple JOINs and subqueries. Need help with indexing strategy and query rewriting.', category:'Data', urgency:'High', tags:['SQL','PostgreSQL','optimization'], authorId:'u1', helpers:['u3'], status:'Open', comments:[], createdAt:now-3600*5e3 },
+    { id:'r4', title:'Docker compose networking between services', description:'I\'m setting up a microservices app with Docker Compose and can\'t get service-to-service communication working. The API container can\'t reach the database container.', category:'DevOps', urgency:'Medium', tags:['Docker','DevOps','networking'], authorId:'u2', helpers:[], status:'Solved', comments:[{id:'c2',authorId:'u3',text:'Check that you\'re using the service name (not localhost) as the hostname.',createdAt:now-7200*1e3}], createdAt:now-864e5*3 },
+    { id:'r5', title:'Machine learning model overfitting on small dataset', description:'I have a classification problem with only 500 samples. My model achieves 99% train accuracy but only 61% validation. Looking for regularization and data augmentation strategies.', category:'Data', urgency:'Low', tags:['Machine Learning','Python','sklearn'], authorId:'u3', helpers:['u1','u2'], status:'Open', comments:[], createdAt:now-3600*1e4 },
+    { id:'r6', title:'Figma auto-layout responsive component help', description:'I\'m new to Figma and struggling to create a card component that resizes correctly when the content changes. The text overflow and padding don\'t behave as expected.', category:'Design', urgency:'Low', tags:['Figma','UI/UX','design-system'], authorId:'u1', helpers:[], status:'Open', comments:[], createdAt:now-3600*2e4 },
+    { id:'r7', title:'Node.js WebSocket memory leak in production', description:'Our real-time chat application using Socket.io is leaking memory. After ~48 hours, the process uses 2GB+ RAM and crashes. Need help with connection lifecycle management.', category:'Coding', urgency:'High', tags:['Node.js','WebSocket','memory'], authorId:'u2', helpers:['u3'], status:'In Progress', comments:[], createdAt:now-3600*3e4 },
+    { id:'r8', title:'SEO audit and content strategy for tech blog', description:'I have a tech blog with 50+ articles but getting minimal organic traffic. Looking for someone to audit my SEO practices and suggest a content strategy.', category:'Writing', urgency:'Low', tags:['SEO','content','marketing'], authorId:'u3', helpers:[], status:'Open', comments:[], createdAt:now-3600*5e4 },
+  ];
+  App.notifications = [
+    { id:'n1', type:'help', text:'Alex Chen offered to help with your React request.', read:false, createdAt:now-3600*1e3 },
+    { id:'n2', type:'badge', text:'You earned the "Helper" badge!', read:false, createdAt:now-864e5 },
+    { id:'n3', type:'comment', text:'New comment on "SQL query optimization".', read:true, createdAt:now-7200*1e3 },
+    { id:'n4', type:'request', text:'New Coding request matches your skills: Node.js.', read:false, createdAt:now-3600*2e3 },
+  ];
+  saveData();
+}
+
+/* ============================================================
+   ROUTING
+   ============================================================ */
+const PROTECTED = ['dashboard','explore','create','request-detail','leaderboard','ai-center','notifications','profile','admin'];
+
+function navigate(page, params={}) {
+  if(PROTECTED.includes(page) && !App.currentUser) { navigate('auth'); return; }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(!el) { navigate('landing'); return; }
+  el.classList.add('active');
+  App.currentPage = page;
+  window.scrollTo(0,0);
+  // Navbar visibility
+  const nav = document.getElementById('navbar');
+  nav.classList.toggle('hidden', !App.currentUser || page==='landing' || page==='auth' || page==='onboarding');
+  // Active nav link
+  document.querySelectorAll('.nav-link[data-page]').forEach(l=>{
+    l.classList.toggle('active', l.dataset.page===page);
+  });
+  // Page-specific init
+  if(page==='dashboard') initDashboard();
+  if(page==='explore') renderExplore();
+  if(page==='leaderboard') renderLeaderboard();
+  if(page==='ai-center') initAICenter();
+  if(page==='notifications') renderNotifications();
+  if(page==='profile') initProfile();
+  if(page==='admin') initAdmin();
+  if(page==='request-detail' && params.id) { currentRequestId=params.id; renderRequestDetail(); }
+  if(page==='create') resetCreateForm();
+  updateNavbar();
+  saveData();
+}
+
+/* ============================================================
+   NAVBAR HELPERS
+   ============================================================ */
+function updateNavbar() {
+  if(!App.currentUser) return;
+  const u = App.currentUser;
+  const av = document.getElementById('nav-avatar');
+  av.textContent = getUserInitials(u);
+  av.style.background = u.color||'#6c63ff';
+  av.style.color = 'white';
+  // Notif badge
+  const unread = App.notifications.filter(n=>!n.read).length;
+  const badge = document.getElementById('notif-badge');
+  badge.textContent = unread;
+  badge.classList.toggle('hidden', unread===0);
+}
+function toggleAvatarDropdown() {
+  document.getElementById('avatar-dropdown').classList.toggle('hidden');
+}
+function closeAvatarDropdown() {
+  document.getElementById('avatar-dropdown').classList.add('hidden');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#nav-avatar')&&!e.target.closest('#avatar-dropdown')) closeAvatarDropdown();
+});
+function toggleMobileNav() {
+  document.getElementById('mobile-nav').classList.toggle('open');
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+}
+
+/* ============================================================
+   TOAST SYSTEM
+   ============================================================ */
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = {success:'fa-check-circle',error:'fa-times-circle',info:'fa-info-circle',warning:'fa-exclamation-triangle'};
+  el.innerHTML = `<i class="fas ${icons[type]||'fa-info-circle'}"></i><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>{
+    el.classList.add('out');
+    setTimeout(()=>el.remove(), 350);
+  }, 3000);
+}
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function showAuthTab(tab) {
+  document.getElementById('auth-login').classList.toggle('hidden', tab!=='login');
+  document.getElementById('auth-signup').classList.toggle('hidden', tab!=='signup');
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+}
+function selectRole(el) {
+  document.querySelectorAll('.role-card').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRole = el.dataset.role;
+}
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if(el) { el.textContent=''; el.classList.add('hidden'); }
+}
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  clearErr('login-email-err'); clearErr('login-pass-err'); clearErr('login-err');
+  let ok = true;
+  if(!email){ showErr('login-email-err','Email required'); ok=false; }
+  if(!pass){ showErr('login-pass-err','Password required'); ok=false; }
+  if(!ok) return;
+  const user = App.users.find(u=>u.email===email && u.pass===hashPass(pass));
+  if(!user) { showErr('login-err','Invalid email or password.'); return; }
+  App.currentUser = user;
+  saveData(); toast('Welcome back, '+user.name+'! 👋','success');
+  navigate('dashboard');
+}
+function doSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-pass').value;
+  clearErr('signup-name-err'); clearErr('signup-email-err'); clearErr('signup-pass-err'); clearErr('signup-err');
+  let ok = true;
+  if(!name){ showErr('signup-name-err','Name required'); ok=false; }
+  if(!email||!email.includes('@')){ showErr('signup-email-err','Valid email required'); ok=false; }
+  if(pass.length<6){ showErr('signup-pass-err','Min 6 characters'); ok=false; }
+  if(!ok) return;
+  if(App.users.find(u=>u.email===email)){ showErr('signup-err','Email already registered.'); return; }
+  const user = { id:genId(), name, email, pass:hashPass(pass), role:selectedRole, bio:'', location:'', skills:[], color:AVATAR_COLORS[0], createdAt:Date.now() };
+  App.users.push(user);
+  App.currentUser = user;
+  saveData();
+  initOnboarding();
+  navigate('onboarding');
+}
+function demoLogin() {
+  const user = App.users.find(u=>u.email==='alex@demo.com');
+  if(user) { App.currentUser=user; saveData(); toast('Demo login as Alex 👋','info'); navigate('dashboard'); }
+  else toast('Demo data not found','error');
+}
+function logout() {
+  App.currentUser = null; saveData();
+  document.getElementById('navbar').classList.add('hidden');
+  navigate('landing'); toast('Logged out','info');
+}
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+function initOnboarding() {
+  // Avatar colors
+  const cp = document.getElementById('color-picker');
+  cp.innerHTML = '';
+  AVATAR_COLORS.forEach(c=>{
+    const d = document.createElement('div');
+    d.className = 'color-dot'+(c===obAvatarColor?' selected':'');
+    d.style.background = c;
+    d.onclick = ()=>{ document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); obAvatarColor=c; };
+    cp.appendChild(d);
+  });
+  // Skills grid
+  const sg = document.getElementById('skills-grid');
+  sg.innerHTML = '';
+  ALL_SKILLS.forEach(s=>{
+    const ch = document.createElement('div');
+    ch.className = 'skill-chip';
+    ch.textContent = s;
+    ch.onclick = ()=>{
+      ch.classList.toggle('selected');
+      if(ch.classList.contains('selected')) obSelectedSkills.push(s);
+      else obSelectedSkills = obSelectedSkills.filter(x=>x!==s);
+    };
+    sg.appendChild(ch);
+  });
+  // Pre-fill name
+  if(App.currentUser) document.getElementById('ob-name').value = App.currentUser.name||'';
+  setProgressStep(1);
+}
+function setProgressStep(step) {
+  document.querySelectorAll('.onboard-step').forEach((s,i)=>s.classList.toggle('active', i===step-1));
+  document.querySelectorAll('.progress-step').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i<step-1) s.classList.add('done');
+    else if(i===step-1) s.classList.add('active');
+  });
+  document.getElementById('progress-label').textContent = `Step ${step} of 3`;
+}
+function obNext(step) {
+  if(step===1) {
+    const name = document.getElementById('ob-name').value.trim();
+    if(!name) { toast('Please enter your display name','error'); return; }
+    App.currentUser.name = name;
+    App.currentUser.bio = document.getElementById('ob-bio').value.trim();
+    App.currentUser.location = document.getElementById('ob-location').value.trim();
+    App.currentUser.color = obAvatarColor;
+    setProgressStep(2);
+  } else if(step===2) {
+    if(obSelectedSkills.length===0) { toast('Select at least one skill','error'); return; }
+    App.currentUser.skills = [...obSelectedSkills];
+    setProgressStep(3);
+    loadAIOnboarding();
+  }
+}
+function obBack(step) { setProgressStep(step-1); }
+async function loadAIOnboarding() {
+  document.getElementById('ai-loading').classList.remove('hidden');
+  document.getElementById('ai-results').classList.add('hidden');
+  const skills = (App.currentUser.skills||[]).join(', ');
+  const prompt = `Based on these selected skills: ${skills}, suggest: 1) 3 areas where this person can HELP others (label: 'You Can Help With'), 2) 3 areas where this person might NEED help to grow (label: 'You Might Need Help With'). Return JSON only: {"canHelp":["...","...","..."],"needHelp":["...","...","..."]}`;
+  const result = await askAI(prompt);
+  document.getElementById('ai-loading').classList.add('hidden');
+  let data = { canHelp:['Mentor beginners in your skills','Code reviews & feedback','Pair programming sessions'], needHelp:['Advanced system design','New frameworks & tools','Soft skills development'] };
+  if(result) {
+    try { const clean=result.replace(/```json|```/g,'').trim(); data=JSON.parse(clean); } catch(e){}
+  }
+  document.getElementById('can-help-list').innerHTML = (data.canHelp||[]).map(s=>`<div class="suggestion-item"><span>✅</span><span>${s}</span></div>`).join('');
+  document.getElementById('need-help-list').innerHTML = (data.needHelp||[]).map(s=>`<div class="suggestion-item"><span>🔍</span><span>${s}</span></div>`).join('');
+  document.getElementById('ai-results').classList.remove('hidden');
+}
+function finishOnboarding() {
+  const idx = App.users.findIndex(u=>u.id===App.currentUser.id);
+  if(idx>-1) App.users[idx] = App.currentUser;
+  App.notifications.push({ id:genId(), type:'badge', text:'Welcome to SkillBridge! Complete your first help request to earn badges.', read:false, createdAt:Date.now() });
+  saveData(); toast('Profile set up! Welcome aboard 🎉','success');
+  navigate('dashboard');
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function initDashboard() {
+  const u = App.currentUser;
+  document.getElementById('dash-greeting').textContent = `Welcome back, ${u.name.split(' ')[0]}! 👋`;
+  const posted = App.requests.filter(r=>r.authorId===u.id).length;
+  const helped = App.requests.filter(r=>(r.helpers||[]).includes(u.id)).length;
+  const trust = Math.round(calcTrust(u.id));
+  const allTrusts = App.users.map(x=>({id:x.id,t:calcTrust(x.id)})).sort((a,b)=>b.t-a.t);
+  const rank = allTrusts.findIndex(x=>x.id===u.id)+1;
+  document.getElementById('dash-posted').textContent = posted;
+  document.getElementById('dash-helped').textContent = helped;
+  document.getElementById('dash-trust').textContent = trust;
+  document.getElementById('dash-rank').textContent = '#'+rank;
+  // Recent requests
+  const recent = [...App.requests].sort((a,b)=>b.createdAt-a.createdAt).slice(0,5);
+  const cont = document.getElementById('dash-recent');
+  if(recent.length===0) { cont.innerHTML='<p style="color:var(--muted);text-align:center;padding:20px;">No requests yet. <a onclick="navigate(\'create\')" style="cursor:pointer;">Post one!</a></p>'; }
+  else cont.innerHTML = recent.map(r=>reqCardHTML(r, true)).join('');
+  loadDashInsights();
+}
+async function loadDashInsights() {
+  document.getElementById('insights-content').innerHTML = '<div style="text-align:center;padding:16px;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  const u = App.currentUser;
+  const posted = App.requests.filter(r=>r.authorId===u.id).length;
+  const helped = App.requests.filter(r=>(r.helpers||[]).includes(u.id)).length;
+  const prompt = `You are an assistant for SkillBridge, a help platform. The user's name is ${u.name}, skills are ${(u.skills||[]).join(', ')}, they have ${posted} open requests and helped ${helped} others. Give 2 short, actionable insights (max 20 words each) to help them be more active. Return JSON: {"insights":["insight1","insight2"]}`;
+  const result = await askAI(prompt);
+  let insights = ['Explore open requests that match your skills to earn trust points.','Complete your profile to attract better matches from the community.'];
+  if(result) {
+    try { const d=JSON.parse(result.replace(/```json|```/g,'').trim()); insights=d.insights||insights; } catch(e){}
+  }
+  document.getElementById('insights-content').innerHTML = insights.map(i=>`<div class="insight-item"><span style="font-size:18px;">✨</span><span style="font-size:13px;">${i}</span></div>`).join('');
+}
+
+/* ============================================================
+   EXPLORE
+   ============================================================ */
+function renderExplore() { filterRequests(); }
+function filterRequests() {
+  const q = (document.getElementById('explore-search')||{value:''}).value.toLowerCase();
+  const cat = (document.getElementById('filter-category')||{value:''}).value;
+  const urg = (document.getElementById('filter-urgency')||{value:''}).value;
+  const sta = (document.getElementById('filter-status')||{value:''}).value;
+  let res = [...App.requests];
+  if(q) res = res.filter(r=>r.title.toLowerCase().includes(q)||r.description.toLowerCase().includes(q)||(r.tags||[]).some(t=>t.toLowerCase().includes(q)));
+  if(cat) res = res.filter(r=>r.category===cat);
+  if(urg) res = res.filter(r=>r.urgency===urg);
+  if(sta) res = res.filter(r=>r.status===sta);
+  res.sort((a,b)=>b.createdAt-a.createdAt);
+  const grid = document.getElementById('requests-grid');
+  if(!grid) return;
+  if(res.length===0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>No requests found</h3><p style="color:var(--muted);font-size:14px;margin-top:6px;">Try adjusting your filters.</p><button class="btn btn-primary btn-sm" onclick="clearFilters()" style="margin-top:12px;">Clear Filters</button></div>`;
+  } else {
+    grid.innerHTML = res.map(r=>reqCardHTML(r)).join('');
+  }
+}
+function clearFilters() {
+  ['filter-category','filter-urgency','filter-status','explore-search'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  filterRequests();
+}
+function reqCardHTML(r, compact=false) {
+  const author = getUser(r.authorId)||{name:'Unknown',color:'#666'};
+  const urgClass = r.urgency==='Low'?'urgency-low':r.urgency==='High'?'urgency-high':'urgency-med';
+  const statusClass = r.status==='Solved'?'status-solved':r.status==='In Progress'?'status-prog':'status-open';
+  const tags = (r.tags||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('');
+  const isMine = App.currentUser && r.authorId===App.currentUser.id;
+  const isHelper = App.currentUser && (r.helpers||[]).includes(App.currentUser.id);
+  return `<div class="request-card" onclick="navigate('request-detail',{id:'${r.id}'})">
+    <div class="request-card-header">
+      <div class="request-card-title">${r.title}</div>
+      <div class="request-card-badges">
+        <span class="tag ${urgClass}">${r.urgency}</span>
+        <span class="tag ${statusClass}">${r.status}</span>
+      </div>
+    </div>
+    <p class="request-card-desc">${r.description}</p>
+    <div class="request-card-tags">${tags}</div>
+    <div class="request-card-footer">
+      <div class="request-card-author">
+        <div class="avatar-sm" style="background:${author.color};color:white;">${getUserInitials(author)}</div>
+        <span style="font-size:12px;color:var(--muted);">${author.name} · ${timeAgo(r.createdAt)}</span>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        ${!isMine&&r.status!=='Solved'?`<button class="btn btn-sm ${isHelper?'btn-success':'btn-secondary'}" onclick="quickHelp('${r.id}',event)">${isHelper?'✓ Helping':'I Can Help'}</button>`:''}
+        <span style="font-size:12px;color:var(--muted);">${(r.helpers||[]).length} helper${(r.helpers||[]).length!==1?'s':''}</span>
+      </div>
+    </div>
+  </div>`;
+}
+function quickHelp(reqId, e) {
+  if(e) e.stopPropagation();
+  if(!App.currentUser) { navigate('auth'); return; }
+  const req = App.requests.find(r=>r.id===reqId);
+  if(!req) return;
+  if(req.authorId===App.currentUser.id) { toast('You can\'t help your own request','warning'); return; }
+  if((req.helpers||[]).includes(App.currentUser.id)) { req.helpers=req.helpers.filter(h=>h!==App.currentUser.id); toast('Removed from helpers','info'); }
+  else { req.helpers=[...(req.helpers||[]),App.currentUser.id]; if(req.status==='Open') req.status='In Progress'; toast('Added as helper! 🙌','success'); addNotif(req.authorId,'help',`${App.currentUser.name} offered to help with "${req.title}".`); }
+  saveData();
+  if(App.currentPage==='explore') filterRequests();
+  if(App.currentPage==='dashboard') initDashboard();
+  if(App.currentPage==='request-detail') renderRequestDetail();
+}
+function addNotif(userId, type, text) {
+  App.notifications.unshift({ id:genId(), userId, type, text, read:false, createdAt:Date.now() });
+  saveData(); updateNavbar();
+}
+
+/* ============================================================
+   CREATE REQUEST
+   ============================================================ */
+function resetCreateForm() {
+  ['create-title','create-desc','create-tag-input'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  ['create-title-err','create-desc-err','create-cat-err'].forEach(id=>clearErr(id));
+  createTags=[];
+  renderCreateTags();
+  document.getElementById('diff-container').classList.add('hidden');
+  aiImprovedDesc=null;
+  document.getElementById('create-category').value='';
+  // Reset urgency
+  document.querySelectorAll('.urgency-opt').forEach(o=>{
+    o.className='urgency-opt';
+    if(o.dataset.urg==='Low') o.className='urgency-opt selected-low';
+  });
+}
+function selectUrgency(el) {
+  document.querySelectorAll('.urgency-opt').forEach(o=>o.className='urgency-opt');
+  const u = el.dataset.urg;
+  el.className = `urgency-opt selected-${u==='Low'?'low':u==='Medium'?'med':'high'}`;
+}
+function handleTagInput(e) {
+  if(e.key==='Enter'||e.key===',') {
+    e.preventDefault();
+    const val = document.getElementById('create-tag-input').value.trim().replace(',','');
+    if(val && !createTags.includes(val)) { createTags.push(val); renderCreateTags(); }
+    document.getElementById('create-tag-input').value='';
+  }
+}
+function removeTag(t) { createTags=createTags.filter(x=>x!==t); renderCreateTags(); }
+function renderCreateTags() {
+  document.getElementById('create-tags-chips').innerHTML = createTags.map(t=>`<span class="tags-chip">${t}<button onclick="removeTag('${t}')">×</button></span>`).join('');
+}
+async function aiAutoCategory() {
+  const title=document.getElementById('create-title').value.trim(), desc=document.getElementById('create-desc').value.trim();
+  if(!title&&!desc){toast('Enter title or description first','warning');return;}
+  toast('Categorizing…','info');
+  const r=await askAI(`Categorize this help request into ONE of: Coding, Design, Data, DevOps, Writing, Other. Title: "${title}". Description: "${desc}". Return only the category name, nothing else.`);
+  if(r){
+    const cats=['Coding','Design','Data','DevOps','Writing','Other'];
+    const match=cats.find(c=>r.trim().toLowerCase().includes(c.toLowerCase()));
+    if(match){document.getElementById('create-category').value=match;toast(`Category: ${match} ✅`,'success');}
+    else toast('Could not determine category','warning');
+  } else toast('AI unavailable, try manually','warning');
+}
+async function aiSuggestTags() {
+  const title=document.getElementById('create-title').value.trim(), desc=document.getElementById('create-desc').value.trim();
+  if(!title&&!desc){toast('Enter title or description first','warning');return;}
+  toast('Generating tags…','info');
+  const r=await askAI(`Suggest 5 relevant short tags for this help request. Title: "${title}". Description: "${desc}". Return a JSON array of strings, e.g. ["tag1","tag2","tag3","tag4","tag5"]. Only return the JSON array.`);
+  if(r){
+    try{
+      const clean=r.replace(/```json|```/g,'').trim();
+      const tags=JSON.parse(clean);
+      if(Array.isArray(tags)){
+        tags.forEach(t=>{ if(!createTags.includes(t)) createTags.push(t); });
+        renderCreateTags(); toast('Tags added! ✅','success');
+      }
+    } catch(e){toast('Could not parse tags','warning');}
+  } else toast('AI unavailable','warning');
+}
+async function aiRewriteDesc() {
+  const desc=document.getElementById('create-desc').value.trim();
+  if(!desc){toast('Enter a description first','warning');return;}
+  toast('Improving description…','info');
+  const r=await askAI(`Rewrite this help request description to be clearer, more structured, and easier to understand. Keep it concise (max 150 words). Original: "${desc}". Return only the improved text, no preamble.`);
+  if(r){
+    aiImprovedDesc=r.trim();
+    document.getElementById('diff-preview').textContent=aiImprovedDesc;
+    document.getElementById('diff-container').classList.remove('hidden');
+    toast('AI suggestion ready!','success');
+  } else toast('AI unavailable','warning');
+}
+function acceptImprovement() {
+  if(aiImprovedDesc){document.getElementById('create-desc').value=aiImprovedDesc; document.getElementById('diff-container').classList.add('hidden'); toast('Description updated ✅','success');}
+}
+function rejectImprovement() { document.getElementById('diff-container').classList.add('hidden'); aiImprovedDesc=null; }
+function submitRequest() {
+  const title=document.getElementById('create-title').value.trim();
+  const desc=document.getElementById('create-desc').value.trim();
+  const cat=document.getElementById('create-category').value;
+  clearErr('create-title-err'); clearErr('create-desc-err'); clearErr('create-cat-err');
+  let ok=true;
+  if(!title){showErr('create-title-err','Title required');ok=false;}
+  if(!desc){showErr('create-desc-err','Description required');ok=false;}
+  if(!cat){showErr('create-cat-err','Category required');ok=false;}
+  if(!ok) return;
+  const urgEl=document.querySelector('.urgency-opt[class*="selected"]');
+  const urg=urgEl?urgEl.dataset.urg:'Medium';
+  const req={id:genId(),title,description:desc,category:cat,urgency:urg,tags:[...createTags],authorId:App.currentUser.id,helpers:[],status:'Open',comments:[],createdAt:Date.now()};
+  App.requests.unshift(req);
+  saveData(); toast('Request posted! 🚀','success');
+  navigate('explore');
+}
+
+/* ============================================================
+   REQUEST DETAIL
+   ============================================================ */
+async function renderRequestDetail() {
+  const r = App.requests.find(x=>x.id===currentRequestId);
+  if(!r){navigate('explore');return;}
+  // Badges
+  const urgClass=r.urgency==='Low'?'urgency-low':r.urgency==='High'?'urgency-high':'urgency-med';
+  const statusClass=r.status==='Solved'?'status-solved':r.status==='In Progress'?'status-prog':'status-open';
+  document.getElementById('detail-badges').innerHTML=`<span class="tag ${urgClass}">${r.urgency}</span><span class="tag ${statusClass}">${r.status}</span><span class="tag">${r.category}</span>`;
+  document.getElementById('detail-title').textContent=r.title;
+  document.getElementById('detail-desc').textContent=r.description;
+  // Tags
+  document.getElementById('detail-tags').innerHTML=(r.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+  // AI Summary
+  document.getElementById('detail-summary').textContent='Generating summary…';
+  const sumr=await askAI(`Summarize this help request in exactly 2 sentences. Title: "${r.title}". Description: "${r.description}". Return only the 2-sentence summary.`);
+  document.getElementById('detail-summary').textContent=sumr||`${r.title} — a community help request seeking assistance with ${r.category}.`;
+  // Meta box
+  const author=getUser(r.authorId)||{name:'Unknown',color:'#666'};
+  document.getElementById('detail-meta-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Posted by</span><span style="display:flex;align-items:center;gap:6px;"><div class="avatar-sm" style="background:${author.color};color:white;">${getUserInitials(author)}</div>${author.name}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Posted</span><span>${timeAgo(r.createdAt)}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Category</span><span>${r.category}</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Urgency</span><span class="tag ${urgClass}">${r.urgency}</span></div>
+  `;
+  // Helpers
+  document.getElementById('helpers-count').textContent=(r.helpers||[]).length;
+  const hl=document.getElementById('helpers-list');
+  if((r.helpers||[]).length===0){hl.innerHTML='<p style="color:var(--muted);font-size:13px;">No helpers yet. Be the first!</p>';}
+  else {
+    hl.innerHTML=(r.helpers||[]).map(hid=>{const hu=getUser(hid)||{name:'Unknown',color:'#666',skills:[]};return`<div class="helper-item"><div class="avatar-sm" style="background:${hu.color};color:white;">${getUserInitials(hu)}</div><div><div style="font-size:13px;font-weight:600;">${hu.name}</div><div style="font-size:11px;color:var(--muted);">${(hu.skills||[]).slice(0,2).join(', ')||'No skills listed'}</div></div></div>`;}).join('');
+  }
+  // Action buttons
+  const actCard=document.getElementById('detail-actions-card');
+  const isOwner=App.currentUser&&r.authorId===App.currentUser.id;
+  const isHelper=App.currentUser&&(r.helpers||[]).includes(App.currentUser.id);
+  let actions='<div style="display:flex;gap:10px;flex-wrap:wrap;">';
+  if(!isOwner&&r.status!=='Solved'){
+    actions+=`<button class="btn ${isHelper?'btn-success':'btn-primary'}" onclick="quickHelp('${r.id}',null)">${isHelper?'✓ You\'re Helping':'🙋 I Can Help'}</button>`;
+  }
+  if(isOwner&&r.status!=='Solved'){
+    actions+=`<button class="btn btn-success" onclick="markSolved('${r.id}')"><i class="fas fa-check"></i> Mark as Solved</button>`;
+  }
+  if(isOwner){
+    actions+=`<button class="btn btn-danger btn-sm" onclick="deleteRequest('${r.id}')"><i class="fas fa-trash"></i> Delete</button>`;
+  }
+  actions+='</div>';
+  actCard.innerHTML=actions;
+  // Comments
+  renderComments(r);
+  // Hide comment form if solved and not involved
+  if(!App.currentUser) document.getElementById('comment-form').classList.add('hidden');
+}
+function renderComments(r) {
+  const cont=document.getElementById('detail-comments');
+  if((r.comments||[]).length===0){cont.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px 0;">No comments yet. Start the conversation!</p>';return;}
+  cont.innerHTML=(r.comments||[]).map(c=>{const cu=getUser(c.authorId)||{name:'Unknown',color:'#666'};return`<div class="comment"><div class="avatar-sm" style="background:${cu.color};color:white;flex-shrink:0;height:30px;width:30px;">${getUserInitials(cu)}</div><div class="comment-content"><div class="comment-author">${cu.name}</div><div class="comment-text">${c.text}</div><div class="comment-time">${timeAgo(c.createdAt)}</div></div></div>`;}).join('');
+}
+function postComment() {
+  if(!App.currentUser){navigate('auth');return;}
+  const inp=document.getElementById('comment-input');
+  const text=inp.value.trim();
+  if(!text) return;
+  const r=App.requests.find(x=>x.id===currentRequestId);
+  if(!r) return;
+  r.comments=[...(r.comments||[]),{id:genId(),authorId:App.currentUser.id,text,createdAt:Date.now()}];
+  inp.value='';
+  saveData(); renderComments(r);
+  addNotif(r.authorId,'comment',`${App.currentUser.name} commented on "${r.title}".`);
+  toast('Comment posted','success');
+}
+function markSolved(reqId) {
+  const r=App.requests.find(x=>x.id===reqId);
+  if(!r) return;
+  r.status='Solved'; saveData(); launchConfetti(); toast('Request marked as solved! 🎉','success');
+  renderRequestDetail();
+}
+function deleteRequest(reqId) {
+  if(!confirm('Delete this request?')) return;
+  App.requests=App.requests.filter(r=>r.id!==reqId);
+  saveData(); toast('Request deleted','info');
+  navigate('explore');
+}
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+function renderLeaderboard() {
+  const ranked = App.users.map(u=>({...u, trust:calcTrust(u.id), helped:App.requests.filter(r=>(r.helpers||[]).includes(u.id)).length, badges:getBadges(u.id)})).sort((a,b)=>b.trust-a.trust);
+  const top3=ranked.slice(0,3);
+  const podium=document.getElementById('lb-podium');
+  // Podium order: 2nd, 1st, 3rd
+  const order=[top3[1],top3[0],top3[2]];
+  const podClass=['podium-2','podium-1','podium-3'];
+  const placeLabels=['2nd','1st','3rd'];
+  podium.innerHTML=order.filter(Boolean).map((u,i)=>{
+    const realI=i===0?1:i===1?0:2;
+    return`<div class="podium-slot ${podClass[i]}">
+      <div class="podium-avatar" style="background:${u.color};color:white;">${getUserInitials(u)}</div>
+      <div class="podium-name">${u.name}</div>
+      <div class="podium-score">${Math.round(u.trust)} pts</div>
+      <div class="podium-platform">${placeLabels[i]}</div>
+    </div>`;
+  }).join('');
+  // Full list
+  const list=document.getElementById('lb-list');
+  list.innerHTML=ranked.map((u,i)=>{
+    const maxT=ranked[0].trust||1;
+    const pct=Math.min(100,Math.round(u.trust/maxT*100));
+    return`<div class="lb-row">
+      <div class="lb-rank">${i+1}</div>
+      <div class="avatar-sm" style="background:${u.color};color:white;width:36px;height:36px;font-size:13px;">${getUserInitials(u)}</div>
+      <div class="lb-info">
+        <div class="lb-name">${u.name} ${u.isAdmin?'<span style="font-size:10px;color:var(--accent);">Admin</span>':''}</div>
+        <div class="lb-badges">${u.badges.map(b=>`<span class="lb-badge">${b}</span>`).join('')}</div>
+      </div>
+      <div>
+        <div class="trust-bar" style="width:120px;"><div class="trust-fill" style="width:${pct}%;"></div></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${Math.round(u.trust)} pts · ${u.helped} helped</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   AI CENTER
+   ============================================================ */
+async function initAICenter() {
+  loadTrends();
+  loadSmartMatch();
+  loadCommunityPulse();
+}
+async function loadTrends() {
+  document.getElementById('ai-trends-container').innerHTML='<div style="text-align:center;padding:24px;"><div class="spinner" style="margin:0 auto;"></div></div>';
+  const r=await askAI('What are the top 5 trending skill areas in the tech community right now? Return JSON only: {"trends":[{"name":"...","description":"...","hotness":1},...]} Hotness is 1-5.');
+  let trends=[{name:'AI/ML Engineering',description:'Demand for ML engineers at all-time high.',hotness:5},{name:'Platform Engineering',description:'DevOps evolving into platform teams.',hotness:4},{name:'Web3 & Blockchain',description:'Resurgence with new use cases.',hotness:3},{name:'Rust Programming',description:'Systems programming renaissance.',hotness:4},{name:'Data Engineering',description:'Pipeline and lakehouse expertise.',hotness:5}];
+  if(r){try{const d=JSON.parse(r.replace(/```json|```/g,'').trim());trends=d.trends||trends;}catch(e){}}
+  document.getElementById('ai-trends-container').innerHTML=`<div class="trend-cards">${trends.map(t=>`<div class="trend-card card-hover"><div class="trend-name">${t.name}</div><div class="trend-desc">${t.description}</div><div style="display:flex;align-items:center;gap:6px;"><div class="hotness-bar" style="flex:1;"><div class="hotness-fill" style="width:${(t.hotness/5*100)}%;"></div></div><span style="font-size:11px;color:var(--muted);">${t.hotness}/5</span></div></div>`).join('')}</div>`;
+}
+async function analyzeSkillGap() {
+  const skill=document.getElementById('skill-gap-input').value.trim();
+  if(!skill){toast('Enter a skill first','warning');return;}
+  toast('Analyzing…','info');
+  const r=await askAI(`Create a 3-step learning path to master "${skill}". Return JSON only: {"steps":[{"title":"...","description":"..."},{"title":"...","description":"..."},{"title":"...","description":"..."}]}`);
+  let steps=[{title:'Learn the Fundamentals',description:'Start with official docs and beginner tutorials.'},{title:'Build Practice Projects',description:'Apply concepts through small real-world projects.'},{title:'Contribute & Specialize',description:'Join communities, contribute to open source, and pick a specialty.'}];
+  if(r){try{const d=JSON.parse(r.replace(/```json|```/g,'').trim());steps=d.steps||steps;}catch(e){}}
+  const lp=document.getElementById('learning-path');
+  lp.innerHTML=steps.map((s,i)=>`<div class="lp-step"><div class="lp-dot">${i+1}</div><div class="lp-content"><h4>${s.title}</h4><p>${s.description}</p></div></div>`).join('');
+  document.getElementById('skill-gap-result').classList.remove('hidden');
+}
+function loadSmartMatch() {
+  if(!App.currentUser){return;}
+  const mySkills=(App.currentUser.skills||[]).map(s=>s.toLowerCase());
+  const matches=App.requests.filter(r=>r.status!=='Solved'&&r.authorId!==App.currentUser.id&&(r.tags||[]).some(t=>mySkills.some(s=>t.toLowerCase().includes(s)||s.includes(t.toLowerCase()))));
+  const cont=document.getElementById('smart-match-list');
+  if(matches.length===0){cont.innerHTML='<p style="color:var(--muted);font-size:14px;">No matching requests found right now. Check back later!</p>';return;}
+  cont.innerHTML=matches.slice(0,4).map(r=>reqCardHTML(r)).join('');
+}
+async function loadCommunityPulse() {
+  const solved=App.requests.filter(r=>r.status==='Solved').length;
+  const total=App.requests.length;
+  const helpers=new Set(App.requests.flatMap(r=>r.helpers||[])).size;
+  document.getElementById('pulse-cards').innerHTML=`
+    <div class="pulse-card"><div class="pulse-stat">${total}</div><div class="pulse-label">Total Requests</div></div>
+    <div class="pulse-card"><div class="pulse-stat">${solved}</div><div class="pulse-label">Resolved</div></div>
+    <div class="pulse-card"><div class="pulse-stat">${helpers}</div><div class="pulse-label">Active Helpers</div></div>
+  `;
+}
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+function renderNotifications() {
+  const list=document.getElementById('notif-list');
+  const icons={help:'🤝',badge:'🏆',comment:'💬',request:'🔔'};
+  const mine=App.notifications;
+  if(mine.length===0){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔔</div><h3>No notifications</h3><p style="color:var(--muted);font-size:14px;margin-top:6px;">When something happens, you\'ll see it here.</p></div>';return;}
+  list.innerHTML=mine.map(n=>`<div class="notif-item ${n.read?'':'unread'}">
+    <div class="notif-icon">${icons[n.type]||'🔔'}</div>
+    <div class="notif-content"><div class="notif-text">${n.text}</div><div class="notif-time">${timeAgo(n.createdAt)}</div></div>
+    ${!n.read?'<div class="notif-dot"></div>':''}
+  </div>`).join('');
+}
+function markAllRead() {
+  App.notifications.forEach(n=>n.read=true);
+  saveData(); renderNotifications(); updateNavbar();
+  toast('All notifications marked as read','success');
+}
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+function initProfile() {
+  const u=App.currentUser;
+  if(!u) return;
+  const av=document.getElementById('profile-avatar');
+  av.textContent=getUserInitials(u); av.style.background=u.color; av.style.color='white';
+  document.getElementById('profile-name').textContent=u.name;
+  const locEl=document.getElementById('profile-location').querySelector('span');
+  locEl.textContent=u.location||'Location not set';
+  document.getElementById('profile-bio').textContent=u.bio||'';
+  document.getElementById('edit-name').value=u.name||'';
+  document.getElementById('edit-bio').value=u.bio||'';
+  document.getElementById('edit-location').value=u.location||'';
+  // Skills grid
+  const sg=document.getElementById('profile-skills-grid');
+  sg.innerHTML='';
+  ALL_SKILLS.forEach(s=>{
+    const ch=document.createElement('div');
+    ch.className='skill-chip'+((u.skills||[]).includes(s)?' selected':'');
+    ch.textContent=s;
+    ch.onclick=()=>{
+      ch.classList.toggle('selected');
+      const skills=u.skills||[];
+      if(ch.classList.contains('selected')){if(!skills.includes(s)) App.currentUser.skills=[...skills,s];}
+      else App.currentUser.skills=skills.filter(x=>x!==s);
+    };
+    sg.appendChild(ch);
+  });
+  // Stats
+  const posted=App.requests.filter(r=>r.authorId===u.id).length;
+  const helped=App.requests.filter(r=>(r.helpers||[]).includes(u.id)).length;
+  const trust=Math.round(calcTrust(u.id));
+  document.getElementById('pstat-posted').textContent=posted;
+  document.getElementById('pstat-helped').textContent=helped;
+  document.getElementById('pstat-trust').textContent=trust;
+  // Badges
+  const badges=getBadges(u.id);
+  document.getElementById('profile-badges').innerHTML=badges.length>0?badges.map(b=>`<span class="lb-badge" style="font-size:12px;padding:4px 12px;">${b}</span>`).join(''):'<p style="color:var(--muted);font-size:13px;">Help others to earn badges!</p>';
+  // Activity
+  const acts=[];
+  App.requests.filter(r=>r.authorId===u.id).slice(0,4).forEach(r=>acts.push({icon:'fa-paper-plane',text:`Posted: ${r.title}`,t:r.createdAt}));
+  App.requests.filter(r=>(r.helpers||[]).includes(u.id)).slice(0,4).forEach(r=>acts.push({icon:'fa-hands-helping',text:`Helped: ${r.title}`,t:r.createdAt}));
+  acts.sort((a,b)=>b.t-a.t);
+  const ac=document.getElementById('profile-activity');
+  ac.innerHTML=acts.slice(0,8).map(a=>`<div class="activity-item"><i class="fas ${a.icon}" style="color:var(--accent);"></i>${a.text} <span style="margin-left:auto;font-size:11px;">${timeAgo(a.t)}</span></div>`).join('')||'<p style="color:var(--muted);font-size:13px;padding:8px 0;">No activity yet.</p>';
+}
+function saveProfile() {
+  const name=document.getElementById('edit-name').value.trim();
+  if(!name){toast('Name cannot be empty','error');return;}
+  App.currentUser.name=name;
+  App.currentUser.bio=document.getElementById('edit-bio').value.trim();
+  App.currentUser.location=document.getElementById('edit-location').value.trim();
+  const idx=App.users.findIndex(u=>u.id===App.currentUser.id);
+  if(idx>-1) App.users[idx]={...App.users[idx],...App.currentUser};
+  saveData(); toast('Profile saved ✅','success');
+  initProfile(); updateNavbar();
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+function initAdmin() {
+  if(App.currentUser&&!App.currentUser.isAdmin){
+    // Allow if searched
+  }
+  const solved=App.requests.filter(r=>r.status==='Solved').length;
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="stat-mini"><div class="sm-label">Total Users</div><div class="sm-val">${App.users.length}</div></div>
+    <div class="stat-mini"><div class="sm-label">Total Requests</div><div class="sm-val">${App.requests.length}</div></div>
+    <div class="stat-mini"><div class="sm-label">Solved</div><div class="sm-val">${solved}</div></div>
+    <div class="stat-mini"><div class="sm-label">Solve Rate</div><div class="sm-val">${App.requests.length?Math.round(solved/App.requests.length*100):0}%</div></div>
+  `;
+  const rb=document.getElementById('admin-req-body');
+  rb.innerHTML=App.requests.map(r=>{const a=getUser(r.authorId)||{name:'?'};return`<tr><td>${r.title}</td><td>${a.name}</td><td>${r.category}</td><td>${r.status}</td><td><button class="btn btn-danger btn-sm" onclick="adminDelete('${r.id}')"><i class="fas fa-trash"></i></button></td></tr>`;}).join('');
+  const ub=document.getElementById('admin-user-body');
+  ub.innerHTML=App.users.map(u=>`<tr><td>${u.name}</td><td>${u.email}</td><td>${(u.skills||[]).slice(0,3).join(', ')}</td><td>${Math.round(calcTrust(u.id))}</td></tr>`).join('');
+}
+function adminDelete(id){
+  if(!confirm('Delete this request?')) return;
+  App.requests=App.requests.filter(r=>r.id!==id);
+  saveData(); initAdmin(); toast('Deleted','info');
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function launchConfetti() {
+  const colors=['#6c63ff','#00d4aa','#ff4d6d','#ffb347','#a78bfa','#fff'];
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.cssText=`left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),3500);
+  }
+}
+
+/* ============================================================
+   MARQUEE SETUP
+   ============================================================ */
+function setupMarquee() {
+  const track=document.getElementById('marquee-track');
+  if(!track) return;
+  const items=[...MARQUEE_SKILLS,...MARQUEE_SKILLS].map(s=>`<span class="marquee-item"><i class="fas fa-code" style="font-size:11px;color:var(--accent);"></i>${s}</span>`).join('');
+  track.innerHTML=items;
+}
+
+/* ============================================================
+   AI API HELPER
+   ============================================================ */
+async function askAI(prompt, systemPrompt='You are a helpful assistant for SkillBridge, a community skill-sharing platform.') {
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:systemPrompt,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await res.json();
+    if(data.content&&data.content[0]) return data.content[0].text||null;
+    return null;
+  } catch(e){ return null; }
+}
+
+/* ============================================================
+   LANDING PAGE INIT
+   ============================================================ */
+function initLanding() { setupMarquee(); }
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function boot() {
+  loadData();
+  seedDemoData();
+  initLanding();
+  // Determine starting page
+  if(App.currentUser) navigate('dashboard');
+  else navigate('landing');
+}
+
+boot();
+</script>
+</body>
+</html>
