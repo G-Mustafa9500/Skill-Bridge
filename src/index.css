@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-text font-body;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5 {
+    @apply font-display;
+    line-height: 1.2;
+  }
+  input, textarea, select {
+    @apply w-full rounded-sm border border-border bg-surface2 px-3.5 py-2.5 text-sm text-text outline-none transition-colors;
+    font-family: 'DM Sans', sans-serif;
+  }
+  input:focus, textarea:focus, select:focus {
+    @apply border-accent;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm px-5 py-2.5 text-sm font-semibold transition-all;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white hover:-translate-y-px hover:shadow-[0_0_20px_rgba(108,99,255,0.4)];
+  }
+  .btn-secondary {
+    @apply btn border border-border bg-white/[0.06] text-text hover:bg-white/10;
+  }
+  .btn-danger {
+    @apply btn bg-danger text-white hover:-translate-y-px hover:shadow-[0_0_20px_rgba(255,77,109,0.4)];
+  }
+  .btn-success {
+    @apply btn bg-accent2 text-[#001a15];
+  }
+  .card {
+    @apply rounded border border-border bg-surface p-5 shadow-card;
+  }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Animated mesh background used behind the landing/auth pages */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mesh-bg::before,
+.mesh-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  animation: meshDrift 9s ease-in-out infinite alternate;
+}
+.mesh-bg::before {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #6c63ff 0%, transparent 70%);
+  top: -100px;
+  left: -100px;
+}
+.mesh-bg::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #00d4aa 0%, transparent 70%);
+  bottom: -100px;
+  right: -100px;
+  animation-duration: 11s;
+  animation-delay: -3s;
+}
+.mesh-bg .mesh3 {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(80px);
+  background: radial-gradient(circle, #ff4d6d 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.12;
+  animation: meshDrift 7s ease-in-out infinite alternate;
+  animation-delay: -5s;
+}
